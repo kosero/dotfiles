@@ -1,0 +1,2 @@
+#!/bin/sh
+exec chpst -e "$TURNSTILE_ENV_DIR" pipewire

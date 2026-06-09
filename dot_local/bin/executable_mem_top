@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+"""ram_top — aggregate per-command RAM usage from /proc, similar to ps_mem."""
+
+import argparse
+import os
+import sys
+from collections import defaultdict
+
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+def parse_args():
+    p = argparse.ArgumentParser(
+        description="Show per-command RSS + swap memory usage."
+    )
+    p.add_argument(
+        "--top", "-t", type=int, default=0,
+        metavar="N",
+        help="Show only the top N commands; 0 means all (default: 0)"
+    )
+    p.add_argument(
+        "--min", "-m", type=float, default=0.0,
+        metavar="MB",
+        help="Hide commands below this RSS threshold in MiB (default: 0)"
+    )
+    p.add_argument(
+        "--swap", "-s", action="store_true",
+        help="Include swap usage in the totals"
+    )
+    return p.parse_args()
+
+
+# ---------------------------------------------------------------------------
+# /proc readers
+# ---------------------------------------------------------------------------
+
+def read_total_ram():
+    """Return total physical RAM in KiB from /proc/meminfo."""
+    with open("/proc/meminfo") as fh:
+        for line in fh:
+            if line.startswith("MemTotal:"):
+                return int(line.split()[1])
+    raise RuntimeError("MemTotal not found in /proc/meminfo")
+
+
+def iter_pids():
+    """Yield every numeric PID found under /proc."""
+    for entry in os.scandir("/proc"):
+        if entry.name.isdigit():
+            yield int(entry.name)
+
+
+def read_pid_smaps(pid):
+    """
+    Parse /proc/<pid>/smaps_rollup (preferred) or fall back to /proc/<pid>/status
+    to get (comm, rss_kib, swap_kib).
+
+    smaps_rollup is available since Linux 4.14 and is far cheaper than
+    reading the full smaps file.  status is the fallback for older kernels
+    but does not expose per-process swap.
+    """
+    # --- command name from /proc/<pid>/comm (single trimmed line) ---
+    try:
+        with open(f"/proc/{pid}/comm") as fh:
+            comm = fh.read().strip()
+    except (FileNotFoundError, PermissionError, ProcessLookupError):
+        return None, None, None
+
+    # --- memory figures ---
+    rss_kib  = 0
+    swap_kib = 0
+
+    smaps_path = f"/proc/{pid}/smaps_rollup"
+    status_path = f"/proc/{pid}/status"
+
+    try:
+        with open(smaps_path) as fh:
+            for line in fh:
+                if line.startswith("Rss:"):
+                    rss_kib  = int(line.split()[1])
+                elif line.startswith("Swap:"):
+                    swap_kib = int(line.split()[1])
+    except (FileNotFoundError, PermissionError, ProcessLookupError):
+        # Fallback: /proc/<pid>/status gives VmRSS but not swap per-process.
+        try:
+            with open(status_path) as fh:
+                for line in fh:
+                    if line.startswith("VmRSS:"):
+                        rss_kib = int(line.split()[1])
+                        break
+        except (FileNotFoundError, PermissionError, ProcessLookupError):
+            return None, None, None
+
+    return comm, rss_kib, swap_kib
+
+
+def snapshot(include_swap):
+    """
+    Return {comm: (rss_kib, swap_kib, pid_count)} aggregated across all PIDs.
+    Processes that share the same command name are merged.
+    """
+    rss   = defaultdict(int)
+    swap  = defaultdict(int)
+    count = defaultdict(int)
+
+    for pid in iter_pids():
+        comm, rss_kib, swap_kib = read_pid_smaps(pid)
+        if comm is None:
+            continue
+        rss[comm]   += rss_kib
+        swap[comm]  += swap_kib if include_swap else 0
+        count[comm] += 1
+
+    return {
+        comm: (rss[comm], swap[comm], count[comm])
+        for comm in rss
+    }
+
+
+# ---------------------------------------------------------------------------
+# Output helpers
+# ---------------------------------------------------------------------------
+
+KIB = 1024.0
+
+def fmt_mib(kib):
+    mib = kib / KIB
+    if mib >= 1000:
+        return f"{mib / KIB:6.2f} GiB"
+    if mib >= 100:
+        return f"{mib:6.1f} MiB"
+    return f"{mib:6.2f} MiB"
+
+
+def pct_of_total(kib, total_kib):
+    if total_kib == 0:
+        return 0.0
+    return 100.0 * kib / total_kib
+
+
+def ascii_bar(pct, width=20):
+    filled = int(min(pct, 100.0) / 100.0 * width)
+    return "[" + "#" * filled + "-" * (width - filled) + "]"
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def main():
+    args      = parse_args()
+    total_kib = read_total_ram()
+
+    print("Reading memory usage from /proc ...", flush=True)
+
+    data = snapshot(args.swap)
+
+    # Each row: (comm, rss_kib, swap_kib, pid_count)
+    rows = [
+        (comm, rss_kib, swap_kib, n)
+        for comm, (rss_kib, swap_kib, n) in data.items()
+        if rss_kib / KIB >= args.min
+    ]
+    rows.sort(key=lambda x: x[1] + x[2], reverse=True)
+
+    if args.top:
+        rows = rows[:args.top]
+
+    total_rss  = sum(r[1] for r in rows)
+    total_swap = sum(r[2] for r in rows)
+
+    swap_col = args.swap
+
+    # Header
+    if swap_col:
+        print(f"\n{'RSS':>10}  {'SWAP':>10}  {'BAR':22}  COMMAND")
+    else:
+        print(f"\n{'RSS':>10}  {'BAR':22}  COMMAND")
+    print("-" * (72 if swap_col else 60))
+
+    for comm, rss_kib, swap_kib, n in rows:
+        label = comm if n == 1 else f"{comm} ({n})"
+        pct   = pct_of_total(rss_kib + swap_kib, total_kib)
+        bar   = ascii_bar(pct)
+        if swap_col:
+            print(f"{fmt_mib(rss_kib):>10}  {fmt_mib(swap_kib):>10}  {bar:22}  {label}")
+        else:
+            print(f"{fmt_mib(rss_kib):>10}  {bar:22}  {label}")
+
+    print("-" * (72 if swap_col else 60))
+
+    if swap_col:
+        print(
+            f"{fmt_mib(total_rss):>10}  {fmt_mib(total_swap):>10}  {'':22}  TOTAL"
+            f"  (system: {fmt_mib(total_kib).strip()})"
+        )
+    else:
+        print(
+            f"{fmt_mib(total_rss):>10}  {'':22}  TOTAL"
+            f"  (system: {fmt_mib(total_kib).strip()})"
+        )
+    print()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)

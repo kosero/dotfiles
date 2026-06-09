@@ -1,0 +1,10 @@
+#!/bin/sh
+[ -r ./conf ] && . ./conf
+[ -n "$core_services" ] && SVDIR=".." sv start $core_services
+if [ -n "$core_services" ]; then
+    until SVDIR=".." sv check $core_services; do
+        :
+    done
+fi
+[ -p "/run/turnstiled/1000/ready" ] && printf "/home/kosero/.config/service/turnstile-ready" > "/run/turnstiled/1000/ready"
+exec pause

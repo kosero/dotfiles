@@ -1,0 +1,6 @@
+# This file contains fish universal variable definitions.
+# VERSION: 3.0
+SETUVAR --export DOTNET_ROOT:/home/kosero/\x2edotnet
+SETUVAR __fish_initialized:4300
+SETUVAR fish_greeting:
+SETUVAR fish_user_paths:/home/kosero/\x2eopencode/bin\x1e/home/kosero/\x2edotnet

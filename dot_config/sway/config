@@ -1,0 +1,36 @@
+exec dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway DBUS_SESSION_BUS_ADDRESS
+
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+# Your preferred terminal emulator
+set $term ghostty
+# Your preferred application launcher
+set $menu wmenu-run
+set $filemanager dolphin
+
+Include /etc/sway/config.d/*
+Include conf.d/*.conf
+
+default_border pixel 1
+
+### Output configuration
+#output * bg /home/kosero/.config/sway/wallpapers/alcoholic.jpg fill
+output eDP-1 resolution 1920x1080 position 0,0
+
+#~~~ keyboard
+input "type:keyboard" {
+	xkb_layout  us
+	xkb_numlock enabled
+}
+
+#~~~ touchpad
+input "type:touchpad" {
+	dwt enabled
+	tap enabled
+	natural_scroll disabled
+	middle_emulation enabled
+}

@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+"""cpu_top — aggregate per-command CPU usage from /proc, similar to ps_mem."""
+
+import argparse
+import os
+import sys
+import time
+from collections import defaultdict
+
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+def parse_args():
+    p = argparse.ArgumentParser(
+        description="Show per-command CPU usage averaged over several samples."
+    )
+    p.add_argument(
+        "--interval", "-i", type=float, default=2.0,
+        metavar="SEC",
+        help="Seconds between samples (default: 2)"
+    )
+    p.add_argument(
+        "--count", "-n", type=int, default=3,
+        metavar="N",
+        help="Number of samples to average (default: 3)"
+    )
+    p.add_argument(
+        "--top", "-t", type=int, default=0,
+        metavar="N",
+        help="Show only the top N commands; 0 means all (default: 0)"
+    )
+    p.add_argument(
+        "--min", "-m", type=float, default=0.0,
+        metavar="PCT",
+        help="Hide commands below this CPU %% threshold (default: 0)"
+    )
+    return p.parse_args()
+
+
+# ---------------------------------------------------------------------------
+# /proc readers
+# ---------------------------------------------------------------------------
+
+def read_cpu_totals():
+    """Return (total_ticks, idle_ticks) from the first line of /proc/stat."""
+    with open("/proc/stat") as fh:
+        fields = fh.readline().split()[1:]
+    ticks = list(map(int, fields))
+    idle  = ticks[3] + ticks[4]   # idle + iowait
+    return sum(ticks), idle
+
+
+def iter_pids():
+    """Yield every numeric PID found under /proc."""
+    for entry in os.scandir("/proc"):
+        if entry.name.isdigit():
+            yield int(entry.name)
+
+
+def read_pid_stat(pid):
+    """
+    Parse /proc/<pid>/stat and return (command_name, cumulative_cpu_ticks).
+    Returns (None, None) if the process has vanished or is unreadable.
+
+    The comm field is wrapped in parentheses and may itself contain parens,
+    so we locate the *last* closing paren to split the line safely.
+    """
+    try:
+        with open(f"/proc/{pid}/stat") as fh:
+            raw = fh.read()
+    except (FileNotFoundError, PermissionError):
+        return None, None
+
+    rpar = raw.rfind(")")
+    if rpar == -1:
+        return None, None
+
+    comm  = raw[raw.find("(") + 1 : rpar]
+    rest  = raw[rpar + 2:].split()
+
+    try:
+        utime  = int(rest[11])
+        stime  = int(rest[12])
+        cutime = int(rest[13])
+        cstime = int(rest[14])
+    except (IndexError, ValueError):
+        return None, None
+
+    return comm, utime + stime + cutime + cstime
+
+
+def snapshot():
+    """Return {pid: (comm, ticks)} for all readable processes."""
+    result = {}
+    for pid in iter_pids():
+        comm, ticks = read_pid_stat(pid)
+        if comm is not None:
+            result[pid] = (comm, ticks)
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Sampling loop
+# ---------------------------------------------------------------------------
+
+def collect(interval, count):
+    """
+    Take `count` samples spaced `interval` seconds apart.
+
+    Returns:
+        usage      — {comm: cumulative_cpu_pct}  (sum across all samples & PIDs)
+        pid_count  — {comm: number_of_PIDs_seen}
+    """
+    cpu_prev  = read_cpu_totals()
+    snap_prev = snapshot()
+
+    usage     = defaultdict(float)
+    pid_count = defaultdict(int)
+
+    for _ in range(count):
+        time.sleep(interval)
+
+        cpu_cur  = read_cpu_totals()
+        snap_cur = snapshot()
+
+        wall_ticks = max(cpu_cur[0] - cpu_prev[0], 1)
+
+        for pid, (comm, ticks_after) in snap_cur.items():
+            pid_count[comm] += 1
+            if pid in snap_prev:
+                delta = max(ticks_after - snap_prev[pid][1], 0)
+                usage[comm] += 100.0 * delta / wall_ticks
+
+        cpu_prev  = cpu_cur
+        snap_prev = snap_cur
+
+    return usage, pid_count
+
+
+# ---------------------------------------------------------------------------
+# Output helpers
+# ---------------------------------------------------------------------------
+
+def fmt_pct(pct):
+    if pct >= 100:
+        return f"{pct:6.1f}%"
+    if pct >= 10:
+        return f"{pct:6.2f}%"
+    return f"{pct:6.3f}%"
+
+
+def ascii_bar(pct, width=20):
+    filled = int(min(pct, 100.0) / 100.0 * width)
+    return "[" + "#" * filled + "-" * (width - filled) + "]"
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def main():
+    args   = parse_args()
+    total_sec = args.count * args.interval
+
+    print(
+        f"Sampling CPU usage ({args.count} x {args.interval}s"
+        f" = {total_sec:.0f}s) ...",
+        flush=True,
+    )
+
+    usage, pid_count = collect(args.interval, args.count)
+
+    rows = [(comm, pct) for comm, pct in usage.items() if pct >= args.min]
+    rows.sort(key=lambda x: x[1], reverse=True)
+
+    if args.top:
+        rows = rows[:args.top]
+
+    grand_total = sum(usage.values())
+
+    # Header
+    print(f"\n{'CPU %':>10}  {'BAR':22}  COMMAND")
+    print("-" * 60)
+
+    for comm, pct in rows:
+        n     = pid_count.get(comm, 1)
+        label = comm if n == 1 else f"{comm} ({n})"
+        print(f"{fmt_pct(pct):>10}  {ascii_bar(pct):22}  {label}")
+
+    print("-" * 60)
+    print(f"{fmt_pct(grand_total):>10}  {'':22}  TOTAL")
+    print()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)
