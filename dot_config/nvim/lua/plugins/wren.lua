@@ -1,0 +1,3 @@
+return {
+  "lluchs/vim-wren",
+}

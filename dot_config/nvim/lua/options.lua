@@ -1,0 +1,18 @@
+local opts = vim.o
+
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+opts.clipboard = "unnamedplus"
+opts.number = true
+opts.signcolumn = "yes"
+opts.tabstop = 2
+opts.shiftwidth = 2
+opts.updatetime = 300
+opts.termguicolors = true
+opts.mouse = "a"
+opts.smartindent = true
+opts.expandtab = true
+opts.undofile = true
+opts.incsearch = true
+opts.hlsearch = true
+opts.ignorecase = true

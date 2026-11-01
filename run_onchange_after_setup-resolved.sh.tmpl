@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# resolved.conf hash: {{ include "root_configs/resolved.conf" | sha256sum }}
+
+sudo cp "{{ .chezmoi.sourceDir }}/root_configs/resolved.conf" /etc/systemd/resolved.conf
+
+if [ "$(readlink -f /etc/resolv.conf)" != "/run/systemd/resolve/stub-resolv.conf" ]; then
+    sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+fi
+
+sudo systemctl enable --now systemd-resolved
+

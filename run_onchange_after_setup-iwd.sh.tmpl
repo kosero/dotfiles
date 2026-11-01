@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# iwd main.conf hash: {{ include "root_configs/iwd/main.conf" | sha256sum }}
+
+sudo mkdir -p /etc/iwd
+sudo cp "{{ .chezmoi.sourceDir }}/root_configs/iwd/main.conf" /etc/iwd/main.conf
+
+sudo systemctl enable --now iwd
+

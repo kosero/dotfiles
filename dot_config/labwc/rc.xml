@@ -1,0 +1,95 @@
+<labwc_config>
+  <theme>
+    <name>adw-gtk3-dark</name>
+    <cornerRadius>8</cornerRadius>
+    <titlebarLayout>icon:iconify,max,close</titlebarLayout>
+    <font place="ActiveWindow">
+      <name>Iosevka Medium</name>
+      <size>12</size>
+    </font>
+  </theme>
+
+  <desktops number="9">
+    <popupTime>1000</popupTime>
+    <names>
+      <name>1</name>
+      <name>2</name>
+      <name>3</name>
+      <name>4</name>
+      <name>5</name>
+      <name>6</name>
+      <name>7</name>
+      <name>8</name>
+      <name>9</name>
+    </names>
+  </desktops>
+
+  <keyboard>
+    <default />
+
+    <keybind key="W-s">
+      <action name="Execute">
+        <command>footclient</command>
+      </action>
+    </keybind>
+
+    <keybind key="W-d">
+      <action name="Execute">
+        <command>fuzzel</command>
+      </action>
+    </keybind>
+
+    <keybind key="A-F4">
+      <action name="Close" />
+    </keybind>
+    <keybind key="W-q">
+      <action name="Close" />
+    </keybind>
+
+    <keybind key="W-f">
+      <action name="ToggleMaximize" />
+    </keybind>
+
+    <keybind key="W-c">
+      <action name="Iconify" />
+    </keybind>
+
+    <keybind key="W-Left">
+      <action name="SnapToEdge" direction="left" />
+    </keybind>
+    <keybind key="W-Right">
+      <action name="SnapToEdge" direction="right" />
+    </keybind>
+
+    <keybind key="A-space">
+      <action name="ToggleAlwaysOnTop" />
+    </keybind>
+
+    <keybind key="W-S-s">
+      <action name="Execute">
+        <command>sh -c 'grim -g "$(slurp)" - | wl-copy'</command>
+      </action>
+    </keybind>
+
+    <keybind key="W-1"><action name="GoToDesktop" to="1" /></keybind>
+    <keybind key="W-2"><action name="GoToDesktop" to="2" /></keybind>
+    <keybind key="W-3"><action name="GoToDesktop" to="3" /></keybind>
+    <keybind key="W-4"><action name="GoToDesktop" to="4" /></keybind>
+    <keybind key="W-5"><action name="GoToDesktop" to="5" /></keybind>
+    <keybind key="W-6"><action name="GoToDesktop" to="6" /></keybind>
+    <keybind key="W-7"><action name="GoToDesktop" to="7" /></keybind>
+    <keybind key="W-8"><action name="GoToDesktop" to="8" /></keybind>
+    <keybind key="W-9"><action name="GoToDesktop" to="9" /></keybind>
+
+    <keybind key="W-S-1"><action name="SendToDesktop" to="1" /></keybind>
+    <keybind key="W-S-2"><action name="SendToDesktop" to="2" /></keybind>
+    <keybind key="W-S-3"><action name="SendToDesktop" to="3" /></keybind>
+    <keybind key="W-S-4"><action name="SendToDesktop" to="4" /></keybind>
+    <keybind key="W-S-5"><action name="SendToDesktop" to="5" /></keybind>
+    <keybind key="W-S-6"><action name="SendToDesktop" to="6" /></keybind>
+    <keybind key="W-S-7"><action name="SendToDesktop" to="7" /></keybind>
+    <keybind key="W-S-8"><action name="SendToDesktop" to="8" /></keybind>
+    <keybind key="W-S-9"><action name="SendToDesktop" to="9" /></keybind>
+
+  </keyboard>
+</labwc_config>

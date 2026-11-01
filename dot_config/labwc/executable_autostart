@@ -1,0 +1,15 @@
+#!/bin/sh
+#dbus-update-activation-environment --systemd \
+# 	WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=KDE
+
+#/usr/libexec/xdg-desktop-portal-kde &
+/usr/libexec/xdg-desktop-portal-gtk &
+/usr/libexec/xdg-desktop-portal-wlr &
+/usr/libexec/xdg-desktop-portal &
+
+foot --server &
+
+# dms run &
+
+swaybg -i ~/.config/labwc/wp.jpg --mode fill &
+

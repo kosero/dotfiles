@@ -1,0 +1,28 @@
+command = fish
+
+# Pencere
+window-width = 100
+window-height = 30
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
+window-decoration = auto
+window-theme = dark
+background-opacity = 1.0
+
+# Scrollback (satır değil bayt cinsinden, ~10 MB)
+scrollback-limit = 10000000
+mouse-scroll-multiplier = 3
+
+# Font
+font-family = "Iosevka Nerd Font Mono"
+font-size = 12
+
+theme = Breeze
+
+# Seçim
+copy-on-select = clipboard
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = false

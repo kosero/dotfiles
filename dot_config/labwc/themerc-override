@@ -1,0 +1,72 @@
+# ~/.local/share/themes/dark/labwc/themerc
+# rc.xml: <theme><name>dark</name></theme>
+
+# Genel
+border.width: 1
+padding.width: 6
+padding.height: 4
+window.titlebar.padding.height: 4
+window.titlebar.padding.width: 6
+window.button.width: 20
+window.button.height: 20
+window.button.spacing: 4
+window.titlebar.layout: icon:iconify,max,close
+window.label.text.justify: center
+window.active.title.bg.color: #202020
+window.inactive.title.bg.color: #151515
+
+# Kenarlıklar
+window.active.border.color: #7E97AB
+window.inactive.border.color: #373737
+
+# Başlık yazısı
+window.active.label.text.color: #E1E1E1
+window.inactive.label.text.color: #727272
+
+# Butonlar
+window.active.button.unpressed.image.color: #AFAFAF
+window.inactive.button.unpressed.image.color: #727272
+window.active.button.hover.image.color: #E1E1E1
+window.inactive.button.hover.image.color: #AFAFAF
+window.active.button.hover.bg.color: #373737
+window.inactive.button.hover.bg.color: #202020
+window.active.button.close.hover.image.color: #E1E1E1
+window.active.button.close.hover.bg.color: #984936
+window.inactive.button.close.hover.bg.color: #984936
+
+# Gölge
+window.active.shadow.size: 20
+window.inactive.shadow.size: 10
+window.active.shadow.color: #00000066
+window.inactive.shadow.color: #00000033
+
+# Menü
+menu.border.width: 1
+menu.border.color: #373737
+menu.items.padding.x: 8
+menu.items.padding.y: 5
+menu.items.bg.color: #171717
+menu.items.text.color: #E1E1E1
+menu.items.active.bg.color: #38404f
+menu.items.active.text.color: #E1E1E1
+menu.separator.width: 1
+menu.separator.padding.width: 6
+menu.separator.padding.height: 3
+menu.separator.color: #373737
+menu.title.bg.color: #202020
+menu.title.text.color: #A2B5C1
+menu.title.text.justify: center
+
+# OSD (alt-tab vb.)
+osd.bg.color: #171717
+osd.border.color: #373737
+osd.border.width: 1
+osd.label.text.color: #E1E1E1
+osd.window-switcher.style-classic.item.active.bg.color: #38404f
+osd.window-switcher.style-classic.item.active.text.color: #E1E1E1
+
+# Snap overlay
+snapping.overlay.region.bg.color: #7E97AB33
+snapping.overlay.region.border.color: #7E97AB
+snapping.overlay.edge.bg.color: #7E97AB33
+snapping.overlay.edge.border.color: #7E97AB
