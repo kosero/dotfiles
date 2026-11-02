@@ -1,72 +1,68 @@
-# ~/.local/share/themes/dark/labwc/themerc
-# rc.xml: <theme><name>dark</name></theme>
-
-# Genel
-border.width: 1
-padding.width: 6
+# general
+border.width: 4
 padding.height: 4
-window.titlebar.padding.height: 4
-window.titlebar.padding.width: 6
-window.button.width: 20
-window.button.height: 20
-window.button.spacing: 4
-window.titlebar.layout: icon:iconify,max,close
+
+window.button.height: 26
+window.button.width: 26
+window.titlebar.padding.height: 0
+window.titlebar.padding.width: 0
+window.button.spacing: 0
+
+menu.items.padding.y: 8
+menu.items.padding.x: 12
+menu.width.min: 140
+menu.width.max: 900
+menu.overlap.x: 2
+menu.overlap.y: 0
 window.label.text.justify: center
-window.active.title.bg.color: #202020
-window.inactive.title.bg.color: #151515
 
-# Kenarlıklar
-window.active.border.color: #7E97AB
-window.inactive.border.color: #373737
+# Active Windows
+window.active.title.bg.color: #c89664
+window.active.border.color: #c89664
+window.active.label.text.color: #321424
+window.active.indicator.toggled-keybind.color: #321424
 
-# Başlık yazısı
-window.active.label.text.color: #E1E1E1
-window.inactive.label.text.color: #727272
+window.active.shadow.size: 100
+window.active.shadow.color: #321424a0
 
-# Butonlar
-window.active.button.unpressed.image.color: #AFAFAF
-window.inactive.button.unpressed.image.color: #727272
-window.active.button.hover.image.color: #E1E1E1
-window.inactive.button.hover.image.color: #AFAFAF
-window.active.button.hover.bg.color: #373737
-window.inactive.button.hover.bg.color: #202020
-window.active.button.close.hover.image.color: #E1E1E1
-window.active.button.close.hover.bg.color: #984936
-window.inactive.button.close.hover.bg.color: #984936
+window.active.button.unpressed.image.color: #321424
 
-# Gölge
-window.active.shadow.size: 20
-window.inactive.shadow.size: 10
-window.active.shadow.color: #00000066
-window.inactive.shadow.color: #00000033
+# window.active.button.menu.unpressed.image.color: #321424
+# window.active.button.max.unpressed.image.color: #32142400
+# window.active.button.iconify.unpressed.image.color: #32142400
 
-# Menü
-menu.border.width: 1
-menu.border.color: #373737
-menu.items.padding.x: 8
-menu.items.padding.y: 5
-menu.items.bg.color: #171717
-menu.items.text.color: #E1E1E1
-menu.items.active.bg.color: #38404f
-menu.items.active.text.color: #E1E1E1
+# Inactive Windows
+window.inactive.shadow.size: 30
+window.inactive.shadow.color: #32142460
+window.inactive.title.bg.color: #321424
+window.inactive.border.color: #321424
+window.inactive.label.text.color: #c89664
+window.inactive.button.unpressed.image.color: #321424
+window.inactive.button.menu.unpressed.image.color: #321424
+window.inactive.button.max.unpressed.image.color: #32142400
+window.inactive.button.iconify.unpressed.image.color: #32142400
+
+# menu
+menu.items.bg.color: #c89664
+menu.items.text.color: #321424
+menu.items.active.bg.color: #321424
+menu.items.active.text.color: #c89664
 menu.separator.width: 1
 menu.separator.padding.width: 6
 menu.separator.padding.height: 3
-menu.separator.color: #373737
-menu.title.bg.color: #202020
-menu.title.text.color: #A2B5C1
-menu.title.text.justify: center
+menu.separator.color: #321424
 
-# OSD (alt-tab vb.)
-osd.bg.color: #171717
-osd.border.color: #373737
+# on screen display (window-cycle dialog)
+osd.bg.color: #c89664
+osd.border.color: #321424
 osd.border.width: 1
-osd.label.text.color: #E1E1E1
-osd.window-switcher.style-classic.item.active.bg.color: #38404f
-osd.window-switcher.style-classic.item.active.text.color: #E1E1E1
+osd.label.text.color: #321424
 
-# Snap overlay
-snapping.overlay.region.bg.color: #7E97AB33
-snapping.overlay.region.border.color: #7E97AB
-snapping.overlay.edge.bg.color: #7E97AB33
-snapping.overlay.edge.border.color: #7E97AB
+osd.window-switcher.width: 600
+osd.window-switcher.padding: 4
+osd.window-switcher.item.padding.x: 10
+osd.window-switcher.item.padding.y: 1
+osd.window-switcher.item.active.border.width: 2
+
+osd.workspace-switcher.boxes.width: 68
+osd.workspace-switcher.boxes.height: 28

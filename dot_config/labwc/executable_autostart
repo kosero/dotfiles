@@ -11,5 +11,6 @@ foot --server &
 
 # dms run &
 
-swaybg -i ~/.config/labwc/wp.jpg --mode fill &
+# swaybg -i ~/.config/labwc/wp.jpg --mode fill &
+swaybg -c "#c89664"
 

@@ -1,12 +1,12 @@
 <labwc_config>
   <theme>
-    <name>adw-gtk3-dark</name>
+    <name>Breeze Dark</name>
     <cornerRadius>8</cornerRadius>
-    <titlebarLayout>icon:iconify,max,close</titlebarLayout>
     <font place="ActiveWindow">
-      <name>Iosevka Medium</name>
+      <name>Jetbrains Mono</name>
       <size>12</size>
     </font>
+    <dropShadows>yes</dropShadows>
   </theme>
 
   <desktops number="9">
@@ -68,6 +68,12 @@
     <keybind key="W-S-s">
       <action name="Execute">
         <command>sh -c 'grim -g "$(slurp)" - | wl-copy'</command>
+      </action>
+    </keybind>
+
+    <keybind key="W-Print">
+      <action name="Execute">
+        <command>sh -c "grim - | wl-copy"</command>
       </action>
     </keybind>
 
