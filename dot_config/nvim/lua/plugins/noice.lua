@@ -3,7 +3,6 @@ return {
   event = "VeryLazy",
   opts = {
     lsp = {
-      -- LSP signature help görünümünü tamamen kapatır
       signature = {
         enabled = false,
       },

@@ -63,7 +63,7 @@ return {
       end
       vim.o.termguicolors = true
       vim.o.background = "light"
-      vim.g.colors_name = "tam_iki_renk_acik"
+      vim.g.colors_name = "bebis-themes"
 
       local hl = {
         -- Editör
